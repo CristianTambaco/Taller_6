@@ -9,7 +9,7 @@ import { Character } from "../../domain/models/Character.model";
  * - Obtener lista de personajes
  * - Manejar estados de carga
  * - Manejar errores
- * - Implementar paginación
+ * - Implementar paginación sin duplicados
  */
 export const useCharacters = (initialPage: number = 1) => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -26,20 +26,26 @@ export const useCharacters = (initialPage: number = 1) => {
       setLoading(true);
       setError(null);
 
+      
+
       const response = await CharacterService.getCharacters(pageNumber, 10);
 
+      //  Eliminar duplicados por ID (usando Map)
       if (pageNumber === 1) {
         setCharacters(response.items);
       } else {
-        // Agregar más personajes (paginación)
-        setCharacters((prev) => [...prev, ...response.items]);
+        setCharacters((prev) => {
+          const map = new Map<number, Character>();
+          [...prev, ...response.items].forEach((char) => map.set(char.id, char));
+          return Array.from(map.values());
+        });
       }
 
-      // Verificar si hay más páginas
+      // Verificar si hay más páginas disponibles
       setHasMore(response.meta.currentPage < response.meta.totalPages);
     } catch (err) {
       setError("Error al cargar personajes. Intenta nuevamente.");
-      console.error(err);
+      console.error(" Error en fetchCharacters:", err);
     } finally {
       setLoading(false);
     }
@@ -64,9 +70,12 @@ export const useCharacters = (initialPage: number = 1) => {
     fetchCharacters(1);
   };
 
-  // Cargar personajes al montar el componente
+  /**
+   * Cargar personajes al montar el componente
+   */
   useEffect(() => {
     fetchCharacters(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

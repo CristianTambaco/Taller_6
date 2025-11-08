@@ -323,4 +323,27 @@ export const globalStyles = StyleSheet.create({
     shadowRadius: 4,
     height: 60,
   },
+
+
+  characterAffiliation: {
+  fontSize: 13,
+  color: "#0077cc",
+  marginTop: 2,
+},
+
+characterTransformations: {
+  fontSize: 13,
+  color: "#ff9800",
+  marginTop: 2,
+},
+
+characterDescription: {
+  fontSize: 12,
+  color: "#666",
+  marginTop: 4,
+},
+
+
+
+
 });
